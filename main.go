@@ -50,16 +50,12 @@ func main() {
 	prompt := fmt.Sprintf("Suggest 10 commit messages based on the following diff:\n\n%s\n\nCommit messages should:\n - follow conventional commits\n - message format should be: <type>[scope]: <description>\n\nexamples:\n - fix(authentication): add password regex pattern\n - feat(storage): add new test cases\n", diffString)
 
 	// Generate a completion using the OpenAI API
-	completion, err := client.CreateChatCompletion(
+	completion, err := client.CreateCompletion(
 		context.Background(),
-		openai.ChatCompletionRequest{
-			Model: openai.GPT3Dot5Turbo,
-			Messages: []openai.ChatCompletionMessage{
-				{
-					Role:    openai.ChatMessageRoleUser,
-					Content: prompt,
-				},
-			},
+		openai.CompletionRequest{
+			Model:     openai.GPT3TextDavinci003,
+			Prompt:    prompt,
+			MaxTokens: 150,
 		},
 	)
 	if err != nil {

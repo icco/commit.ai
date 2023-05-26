@@ -46,7 +46,7 @@ func main() {
 	client := openai.NewClient(apiKey)
 
 	// Set the prompt for the completion
-	prompt := "Suggest 10 commit messages based on the following diff:\n\n%s\n\nCommit messages should:\n - follow conventional commits\n - message format should be: <type>[scope]: <description>\n\nexamples:\n - fix(authentication): add password regex pattern\n - feat(storage): add new test cases\n"
+	prompt := fmt.Sprintf("Suggest 10 commit messages based on the following diff:\n\n%s\n\nCommit messages should:\n - follow conventional commits\n - message format should be: <type>[scope]: <description>\n\nexamples:\n - fix(authentication): add password regex pattern\n - feat(storage): add new test cases\n", diffString)
 
 	// Generate a completion using the OpenAI API
 	completion, err := client.Completions.Create(prompt, nil)

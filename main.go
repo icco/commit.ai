@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"strings"
+	"os"
 
 	git "github.com/go-git/go-git/v5"
 	openai "github.com/openai/openai-go/v1"
@@ -42,11 +42,11 @@ func main() {
 	diffString := patch.String()
 
 	// Set up the OpenAI client
-	apiKey := "YOUR_API_KEY"
+	apiKey := os.Getenv("OPENAI_TOKEN")
 	client := openai.NewClient(apiKey)
 
 	// Set the prompt for the completion
-	prompt := "Generate a commit message based on the git diff:\n\n" + diffString + "\nCommit message:"
+	prompt := "Suggest 10 commit messages based on the following diff:\n\n%s\n\nCommit messages should:\n - follow conventional commits\n - message format should be: <type>[scope]: <description>\n\nexamples:\n - fix(authentication): add password regex pattern\n - feat(storage): add new test cases\n"
 
 	// Generate a completion using the OpenAI API
 	completion, err := client.Completions.Create(prompt, nil)

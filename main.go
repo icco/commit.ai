@@ -42,6 +42,8 @@ func main() {
 	// Get the diff content as a string
 	diffString := patch.String()
 
+	ctx := context.Background()
+
 	// Set up the OpenAI client
 	apiKey := os.Getenv("OPENAI_KEY")
 	client := openai.NewClient(apiKey)
@@ -51,7 +53,7 @@ func main() {
 
 	// Generate a completion using the OpenAI API
 	completion, err := client.CreateCompletion(
-		context.Background(),
+		ctx,
 		openai.CompletionRequest{
 			Model:     openai.GPT3TextDavinci003,
 			Prompt:    prompt,
@@ -63,7 +65,7 @@ func main() {
 	}
 
 	// Retrieve the generated commit message
-	commitMessages := completion.Choices
+	commitMessages := completion.Choices[0].Text
 
 	// Print the diff and generated commit message
 	fmt.Println("Git diff:")

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	git "github.com/go-git/go-git/v5"
-	openai "github.com/openai/openai-go/v1"
+	openai "github.com/sashabaranov/go-openai"
 )
 
 func main() {

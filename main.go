@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -42,23 +43,34 @@ func main() {
 	diffString := patch.String()
 
 	// Set up the OpenAI client
-	apiKey := os.Getenv("OPENAI_TOKEN")
+	apiKey := os.Getenv("OPENAI_KEY")
 	client := openai.NewClient(apiKey)
 
 	// Set the prompt for the completion
 	prompt := fmt.Sprintf("Suggest 10 commit messages based on the following diff:\n\n%s\n\nCommit messages should:\n - follow conventional commits\n - message format should be: <type>[scope]: <description>\n\nexamples:\n - fix(authentication): add password regex pattern\n - feat(storage): add new test cases\n", diffString)
 
 	// Generate a completion using the OpenAI API
-	completion, err := client.Completions.Create(prompt, nil)
+	completion, err := client.CreateChatCompletion(
+		context.Background(),
+		openai.ChatCompletionRequest{
+			Model: openai.GPT3Dot5Turbo,
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Role:    openai.ChatMessageRoleUser,
+					Content: prompt,
+				},
+			},
+		},
+	)
 	if err != nil {
 		log.Fatal("Failed to generate completion:", err)
 	}
 
 	// Retrieve the generated commit message
-	commitMessage := completion.Choices[0].Text
+	commitMessages := completion.Choices
 
 	// Print the diff and generated commit message
 	fmt.Println("Git diff:")
 	fmt.Println(diffString)
-	fmt.Println("Generated commit message:", commitMessage)
+	fmt.Printf("Generated commit messages:\n%+v", commitMessages)
 }

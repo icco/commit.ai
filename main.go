@@ -5,44 +5,20 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 
-	git "github.com/go-git/go-git/v5"
 	openai "github.com/sashabaranov/go-openai"
 )
 
 func main() {
-	// Open the Git repository in the current directory
-	repo, err := git.PlainOpen(".")
-	if err != nil {
-		log.Fatal("Failed to open Git repository:", err)
-	}
-
-	// Get the HEAD reference of the repository
-	ref, err := repo.Head()
-	if err != nil {
-		log.Fatal("Failed to retrieve HEAD reference:", err)
-	}
-
-	// Get the commit object for the HEAD reference
-	commit, err := repo.CommitObject(ref.Hash())
-	if err != nil {
-		log.Fatal("Failed to retrieve commit object:", err)
-	}
-
-	// Get the diff of the commit against its parent
-	parent, err := commit.Parent(0)
-	if err != nil {
-		log.Fatal("Failed to retrieve parent commit:", err)
-	}
-	patch, err := parent.Patch(commit)
-	if err != nil {
-		log.Fatal("Failed to retrieve commit patch:", err)
-	}
-
-	// Get the diff content as a string
-	diffString := patch.String()
-
 	ctx := context.Background()
+
+	diffOutput, err := exec.Command("git", "diff").Output()
+	if err != nil {
+		log.Fatal("Failed to retrieve git diff:", err)
+	}
+
+	diffString := string(diffOutput)
 
 	// Set up the OpenAI client
 	apiKey := os.Getenv("OPENAI_KEY")
